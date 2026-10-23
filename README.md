@@ -1,9 +1,9 @@
 # rosetta-utc
 
-[![CI](https://github.com/earth-metabolome-initiative/rosetta-utc/actions/workflows/ci.yml/badge.svg)](https://github.com/earth-metabolome-initiative/rosetta-utc/actions/workflows/ci.yml)
-[![Security Audit](https://github.com/earth-metabolome-initiative/rosetta-utc/workflows/Security%20Audit/badge.svg)](https://github.com/earth-metabolome-initiative/rosetta-utc/actions)
+[![CI](https://github.com/connetto-rs/rosetta-utc/actions/workflows/ci.yml/badge.svg)](https://github.com/connetto-rs/rosetta-utc/actions/workflows/ci.yml)
+[![Security Audit](https://github.com/connetto-rs/rosetta-utc/workflows/Security%20Audit/badge.svg)](https://github.com/connetto-rs/rosetta-utc/actions)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Codecov](https://codecov.io/gh/earth-metabolome-initiative/rosetta-utc/branch/main/graph/badge.svg)](https://codecov.io/gh/earth-metabolome-initiative/rosetta-utc)
+[![Codecov](https://codecov.io/gh/connetto-rs/rosetta-utc/branch/main/graph/badge.svg)](https://codecov.io/gh/connetto-rs/rosetta-utc)
 [![Crates.io](https://img.shields.io/crates/v/rosetta-utc.svg)](https://crates.io/crates/rosetta-utc)
 [![Docs.rs](https://docs.rs/rosetta-utc/badge.svg)](https://docs.rs/rosetta-utc)
 
