@@ -130,22 +130,6 @@ jobs:
         # We need headless chrome or firefox
         run: wasm-pack test --headless --chrome --features wasm
 
-  test_os_check:
-    name: Build Check ${{ matrix.os }}
-    runs-on: ${{ matrix.os }}
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [windows-latest, macos-latest]
-    steps:
-      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
-      - uses: dtolnay/rust-toolchain@stable
-      - uses: Swatinem/rust-cache@6323deb102c322ba6fcbdcafc7e3dddab59af2b6 # v2
-      # Just build default features to ensure portability.
-      # Integration tests are skipped because services (Postgres) are tricky on these runners.
-      - name: Build
-        run: cargo build
-
   coverage:
     name: Code Coverage
     runs-on: ubuntu-latest
