@@ -14,7 +14,7 @@ A wrapper implementation of `DateTime<Utc>` providing binary `diesel` bindings f
 This crate bridges the gap, providing a unified `TimestampUTC` type that:
 
 * In **PostgreSQL**, maps to `TIMESTAMPTZ` (Timestamp with time zone), with [`Timestamptz`](https://docs.diesel.rs/2.0.x/diesel/sql_types/struct.Timestamptz.html) sql type.
-* In **SQLite**, maps to `TEXT`, storing ISO8639 strings, with [`TimestamptzSqlite`](https://docs.rs/diesel/latest/diesel/sql_types/struct.TimestamptzSqlite.html)
+* In **SQLite**, maps to `TEXT`, storing `YYYY-MM-DD HH:MM:SS.ffffff+00:00` with six fractional digits, the text a `TIMESTAMPTZ` replicated from PostgreSQL holds, and reading every form [`TimestamptzSqlite`](https://docs.rs/diesel/latest/diesel/sql_types/struct.TimestamptzSqlite.html) reads.
 
 The two SQL types are remapped to the same Rust type, `TimestampUTC`, which internally uses `chrono::DateTime<Utc>`.
 
