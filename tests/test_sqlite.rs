@@ -28,8 +28,8 @@ mod stored {
 }
 
 /// Instants and the text PostgreSQL's microsecond `timestamptz` holds for them
-/// on SQLite.
-const SIX_DIGIT_CASES: [(&str, &str); 4] = [
+/// on SQLite, with years before 1 AD as a minus sign and four digits.
+const SIX_DIGIT_CASES: [(&str, &str); 8] = [
     ("2026-11-19T12:34:57Z", "2026-11-19 12:34:57.000000+00:00"),
     (
         "2026-11-19T12:34:57.12Z",
@@ -42,6 +42,19 @@ const SIX_DIGIT_CASES: [(&str, &str); 4] = [
     (
         "1969-12-31T23:59:59.999999999Z",
         "1969-12-31 23:59:59.999999+00:00",
+    ),
+    ("0042-01-01T00:00:00Z", "0042-01-01 00:00:00.000000+00:00"),
+    (
+        "-000001-01-01T00:00:00Z",
+        "-0001-01-01 00:00:00.000000+00:00",
+    ),
+    (
+        "-000690-07-27T11:48:17.22Z",
+        "-0690-07-27 11:48:17.220000+00:00",
+    ),
+    (
+        "-008395-12-17T15:26:43Z",
+        "-8395-12-17 15:26:43.000000+00:00",
     ),
 ];
 
@@ -92,8 +105,8 @@ fn test_sqlite_roundtrip() {
 
     assert_eq!(result.id, entity.id);
     assert_eq!(
-        result.created_at,
-        TimestampUTC::from(chrono::SubsecRound::trunc_subsecs(*entity.created_at, 6))
+        *result.created_at,
+        jiff::Timestamp::from_microsecond(entity.created_at.as_microsecond()).unwrap()
     );
 }
 
@@ -136,7 +149,7 @@ fn test_sqlite_equality_matches_six_digit_rows() {
 }
 
 #[test]
-fn test_sqlite_reads_variable_fraction_rows() {
+fn test_sqlite_reads_stored_text_forms() {
     let mut connection = connection();
     let cases = [
         ("2026-11-19 12:34:57+00:00", "2026-11-19T12:34:57Z"),
@@ -145,11 +158,32 @@ fn test_sqlite_reads_variable_fraction_rows() {
             "2026-11-19 12:34:57.123456789+00:00",
             "2026-11-19T12:34:57.123456789Z",
         ),
+        ("2023-10-27 12:00:00+02:00", "2023-10-27T10:00:00Z"),
+        ("2023-10-27T10:00:00.5Z", "2023-10-27T10:00:00.5Z"),
+        ("2023-10-27 10:00:00", "2023-10-27T10:00:00Z"),
+        ("2023-10-27 10:00", "2023-10-27T10:00:00Z"),
+        ("2460245.0", "2023-10-27T12:00:00Z"),
+        ("-0001-01-01 00:00:00+00:00", "-000001-01-01T00:00:00Z"),
+        ("-8395-12-17 15:26:43.5+00:00", "-008395-12-17T15:26:43.5Z"),
     ];
 
     for (id, (text, expected)) in (0..).zip(cases) {
         insert_text(&mut connection, id, text);
         let entity: TestEntity = test_table::table.find(id).first(&mut connection).unwrap();
         assert_eq!(entity.created_at, timestamp(expected), "reading {text}");
+    }
+}
+
+#[test]
+fn test_sqlite_rejects_text_that_is_no_timestamp() {
+    let mut connection = connection();
+    // The second text is past the last instant jiff represents once its offset applies,
+    // while the same wall clock read as UTC is still in range.
+    for (id, text) in [(1, "yesterday"), (2, "9999-12-30 21:00:00-02:00")] {
+        insert_text(&mut connection, id, text);
+        let result = test_table::table
+            .find(id)
+            .first::<TestEntity>(&mut connection);
+        assert!(result.is_err(), "reading {text} gave {result:?}");
     }
 }
