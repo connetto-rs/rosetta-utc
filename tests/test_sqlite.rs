@@ -111,6 +111,38 @@ fn test_sqlite_roundtrip() {
 }
 
 #[test]
+fn test_sqlite_max_and_min_follow_instant_order() {
+    let mut connection = connection();
+    let values = [
+        "2023-10-27T10:00:00.5Z",
+        "1999-12-31T23:59:59Z",
+        "2023-10-27T10:00:00.500001Z",
+        "2023-10-27T10:00:00Z",
+        "2023-10-27T10:00:00.123456Z",
+        "0042-01-01T00:00:00Z",
+    ];
+    for (id, value) in (0..).zip(values) {
+        diesel::insert_into(test_table::table)
+            .values(&TestEntity {
+                id,
+                created_at: timestamp(value),
+            })
+            .execute(&mut connection)
+            .unwrap();
+    }
+
+    let (latest, earliest): (Option<TimestampUTC>, Option<TimestampUTC>) = test_table::table
+        .select((
+            diesel::dsl::max(test_table::created_at),
+            diesel::dsl::min(test_table::created_at),
+        ))
+        .first(&mut connection)
+        .unwrap();
+    assert_eq!(latest, Some(timestamp("2023-10-27T10:00:00.500001Z")));
+    assert_eq!(earliest, Some(timestamp("0042-01-01T00:00:00Z")));
+}
+
+#[test]
 fn test_sqlite_writes_six_fractional_digits() {
     let mut connection = connection();
     for (id, (value, expected)) in (0..).zip(SIX_DIGIT_CASES) {
