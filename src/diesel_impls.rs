@@ -4,18 +4,8 @@
 mod postgres;
 mod sqlite;
 
-/// The [`TimestampUTC`] SQL type.
-///
-/// ### [`ToSql`] impls
-///
-/// - [`chrono::DateTime<chrono::Utc>`][chrono::DateTime]
-///
-/// ### [`FromSql`] impls
-///
-/// - [`chrono::DateTime<chrono::Utc>`][chrono::DateTime]
-///
-/// [`ToSql`]: crate::serialize::ToSql
-/// [`FromSql`]: crate::deserialize::FromSql
+/// `TIMESTAMPTZ` on PostgreSQL and `TEXT` on SQLite, read and written as
+/// [`crate::TimestampUTC`].
 #[derive(
     Debug, Clone, Copy, Default, diesel::query_builder::QueryId, diesel::sql_types::SqlType,
 )]

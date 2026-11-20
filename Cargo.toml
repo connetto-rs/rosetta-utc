@@ -1,35 +1,34 @@
 [package]
 name = "rosetta-utc"
-version = "0.1.0"
+version = "0.2.0"
 edition = "2024"
-description = "A wrapper implementation of DateTime<Utc> providing binary diesel bindings for SQLite and PostgreSQL."
+description = "A wrapper of jiff::Timestamp providing binary diesel bindings for SQLite and PostgreSQL."
 license = "MIT"
 readme = "README.md"
 repository = "https://github.com/connetto-rs/rosetta-utc"
 homepage = "https://github.com/connetto-rs/rosetta-utc"
-keywords = ["utc", "diesel", "postgres", "sqlite", "chrono"]
+keywords = ["utc", "diesel", "postgres", "sqlite", "jiff"]
 categories = ["database", "date-and-time", "encoding"]
 
 [dependencies]
-diesel = { version = "2.4.0", optional = true, features = [
-	"chrono",
-] }
+diesel = { version = "2.4.0", optional = true }
 serde = { version = "1.0", optional = true, features = ["derive"] }
-chrono = "0.4"
+jiff = { version = "1.0.1", default-features = false, features = ["std"] }
 
 [features]
 default = []
-serde = ["dep:serde", "chrono/serde"]
+serde = ["dep:serde", "jiff/serde"]
 diesel = ["dep:diesel"]
 postgres = ["diesel", "diesel/postgres"]
 sqlite = ["diesel", "diesel/sqlite"]
-wasm = ["chrono/wasmbind"]
+wasm = ["jiff/js"]
 
 [package.metadata.docs.rs]
 all-features = true
 rustdoc-args = ["--cfg", "docsrs"]
 
 [dev-dependencies]
+serde_json = "1.0"
 wasm-bindgen-test = "0.3"
 
 [lints.rust]
