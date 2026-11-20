@@ -89,6 +89,38 @@ fn stored_micros(conn: &mut PgConnection, id: i32, value: &str) -> QueryResult<P
 }
 
 #[test]
+fn test_postgres_max_and_min_follow_instant_order() {
+    let values = [
+        "2023-10-27T10:00:00.5Z",
+        "1969-12-31T23:59:59.999999Z",
+        "2023-10-27T10:00:00.500001Z",
+        "2023-10-27T10:00:00Z",
+        "2023-10-27T10:00:00.123456Z",
+    ];
+
+    with_table(|conn| {
+        for (id, value) in (0..).zip(values) {
+            diesel::insert_into(test_table::table)
+                .values(&TestEntity {
+                    id,
+                    created_at: timestamp(value),
+                })
+                .execute(conn)?;
+        }
+
+        let (latest, earliest): (Option<TimestampUTC>, Option<TimestampUTC>) = test_table::table
+            .select((
+                diesel::dsl::max(test_table::created_at),
+                diesel::dsl::min(test_table::created_at),
+            ))
+            .first(conn)?;
+        assert_eq!(latest, Some(timestamp("2023-10-27T10:00:00.500001Z")));
+        assert_eq!(earliest, Some(timestamp("1969-12-31T23:59:59.999999Z")));
+        Ok(())
+    });
+}
+
+#[test]
 fn test_postgres_encodes_microseconds_since_2000() {
     let cases = [
         ("2000-01-01T00:00:00Z", 0),
