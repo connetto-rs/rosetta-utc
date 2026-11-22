@@ -132,7 +132,7 @@ jobs:
       - uses: Swatinem/rust-cache@d1527c8f67ef9af357290475d4af4b0fab8f12e0 # v2
       - name: Run WASM Tests
         # We need headless chrome or firefox
-        run: wasm-pack test --headless --chrome --features wasm
+        run: wasm-pack test --headless --chrome --features wasm,postgres
 
   coverage:
     name: Code Coverage

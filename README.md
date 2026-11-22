@@ -25,7 +25,7 @@ This ensures consistent UTC handling across both databases, preventing common ti
 This crate provides a `TimestampUTC` wrapper type that implements various traits based on enabled features:
 
 * **[`diesel`](https://crates.io/crates/diesel)**: Enables Diesel integration.
-  * **`postgres`**: Enables `TimestampUTC` support for [PostgreSQL](https://www.postgresql.org/docs/current/datatype-datetime.html).
+  * **`postgres`**: Enables `TimestampUTC` support for [PostgreSQL](https://www.postgresql.org/docs/current/datatype-datetime.html) through `diesel/postgres_backend`, which builds for `wasm32-unknown-unknown`. `PgConnection` needs `diesel/postgres` enabled by the consumer.
   * **`sqlite`**: Enables `TimestampUTC` support for [SQLite](https://www.sqlite.org/datatype3.html).
 * **[`serde`](https://crates.io/crates/serde)**: Enables serialization and deserialization via [Serde](https://serde.rs/).
 * **`wasm`**: Enables support for `TimestampUTC::now()` on `wasm32-unknown-unknown` targets by enabling `jiff/js`.
