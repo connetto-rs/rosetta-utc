@@ -1,5 +1,8 @@
 //! Tests for PostgreSQL integration in rosetta_utc
-#![cfg(feature = "postgres")]
+#![cfg(all(
+    feature = "postgres",
+    not(all(target_arch = "wasm32", target_os = "unknown"))
+))]
 
 use diesel::pg::PgConnection;
 use diesel::pg::data_types::PgTimestamp;

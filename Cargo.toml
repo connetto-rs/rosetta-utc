@@ -19,7 +19,7 @@ jiff = { version = "1.0.1", default-features = false, features = ["std"] }
 default = []
 serde = ["dep:serde", "jiff/serde"]
 diesel = ["dep:diesel"]
-postgres = ["diesel", "diesel/postgres"]
+postgres = ["diesel", "diesel/postgres_backend"]
 sqlite = ["diesel", "diesel/sqlite"]
 wasm = ["jiff/js"]
 
@@ -30,6 +30,9 @@ rustdoc-args = ["--cfg", "docsrs"]
 [dev-dependencies]
 serde_json = "1.0"
 wasm-bindgen-test = "0.3"
+
+[target.'cfg(not(all(target_arch = "wasm32", target_os = "unknown")))'.dev-dependencies]
+diesel = { version = "2.4.0", features = ["postgres"] }
 
 [lints.rust]
 missing_docs = "deny"
